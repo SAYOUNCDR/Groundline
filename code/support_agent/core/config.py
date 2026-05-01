@@ -35,13 +35,19 @@ class Settings:
     def load(cls) -> "Settings":
         root = repo_root()
         load_dotenv(root / ".env")
-        os.environ.setdefault("FASTEMBED_CACHE_PATH", str(root / "code" / ".cache" / "fastembed"))
+        fastembed_cache = Path(os.getenv("FASTEMBED_CACHE_PATH", "code/.cache/fastembed"))
+        if not fastembed_cache.is_absolute():
+            fastembed_cache = root / fastembed_cache
+        os.environ["FASTEMBED_CACHE_PATH"] = str(fastembed_cache)
+        cache_dir = Path(os.getenv("CACHE_DIR", "code/.cache"))
+        if not cache_dir.is_absolute():
+            cache_dir = root / cache_dir
         return cls(
             root_dir=root,
             code_dir=root / "code",
             data_dir=root / "data",
             support_tickets_dir=root / "support_tickets",
-            cache_dir=root / "code" / ".cache",
+            cache_dir=cache_dir,
             vector_backend=os.getenv("VECTOR_BACKEND", "qdrant"),
             qdrant_url=os.getenv("QDRANT_URL", "http://localhost:6333"),
             qdrant_collection=os.getenv("QDRANT_COLLECTION", "support_corpus"),
