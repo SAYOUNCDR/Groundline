@@ -22,9 +22,12 @@ def contains_any(text: str, phrases: Iterable[str]) -> bool:
 
 
 def first_sentences(text: str, limit: int = 3, max_chars: int = 700) -> str:
-    clean = normalize_space(
-        re.sub(r"!\[[^\]]*\]\([^)]+\)", "", text or "").replace("#", "")
-    )
+    clean = text or ""
+    clean = re.sub(r"!\[[^\]]*\]\([^)]+\)", "", clean)
+    clean = re.sub(r"!\([^)]+\)", "", clean)
+    clean = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", clean)
+    clean = re.sub(r"https?://\S+", "", clean)
+    clean = normalize_space(clean.replace("#", ""))
     if len(clean) <= max_chars:
         return clean
 

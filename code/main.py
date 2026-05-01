@@ -15,29 +15,40 @@ from support_agent.evaluator import evaluate_sample
 
 app = typer.Typer(help="Groundline V1 support triage agent.")
 console = Console()
+DEFAULT_INPUT = Path("support_tickets/support_tickets.csv")
+DEFAULT_OUTPUT = Path("support_tickets/output.csv")
+DEFAULT_DEBUG_JSONL = Path("code/.cache/debug_predictions.jsonl")
 
 
 @app.command()
 def run(
     input_path: Path = typer.Option(
-        Path("support_tickets/support_tickets.csv"),
+        DEFAULT_INPUT,
         "--input",
         "-i",
         help="Input support ticket CSV.",
     ),
     output_path: Path = typer.Option(
-        Path("support_tickets/output.csv"),
+        DEFAULT_OUTPUT,
         "--output",
         "-o",
         help="Output prediction CSV.",
     ),
     debug_jsonl: Path | None = typer.Option(
-        Path("code/.cache/debug_predictions.jsonl"),
+        DEFAULT_DEBUG_JSONL,
         "--debug-jsonl",
         help="Developer-only citation/debug JSONL path. Use --no-debug-jsonl to disable.",
     ),
 ) -> None:
     """Run the agent over a ticket CSV."""
+    run_agent(input_path, output_path, debug_jsonl)
+
+
+def run_agent(
+    input_path: Path = DEFAULT_INPUT,
+    output_path: Path = DEFAULT_OUTPUT,
+    debug_jsonl: Path | None = DEFAULT_DEBUG_JSONL,
+) -> None:
     settings = Settings.load()
     agent = SupportAgent(settings)
     predictions = agent.run_csv(input_path, output_path, debug_jsonl)
@@ -92,7 +103,7 @@ def debug(
     agent = SupportAgent()
     ticket = Ticket(row_id=0, issue=issue, subject=subject, company=company)
     prediction = agent.answer(ticket)
-    console.print_json(data=prediction.to_csv_row())
+    console.print(safe_console_text(json.dumps(prediction.to_csv_row(), ensure_ascii=False, indent=2)))
     citations = agent.citations.get(0)
     for index, citation in enumerate(citations, start=1):
         console.print(
@@ -112,6 +123,6 @@ def safe_console_text(text: str) -> str:
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
-        run()
+        run_agent()
     else:
         app()
