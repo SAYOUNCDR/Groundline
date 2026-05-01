@@ -1,13 +1,15 @@
 # Groundline V1
 
-Groundline is a terminal-based support triage agent for the local support corpus in this repository. V1 is intentionally deterministic and local-first: it uses policy gates plus BM25 retrieval over `data/` to produce the required prediction CSV.
+Groundline is a terminal-based support triage agent for the local support corpus in this repository. The current version uses policy gates plus hybrid retrieval over `data/` to produce the required prediction CSV.
 
-## What V1 Does
+## What The Current Version Does
 
 - Reads tickets from CSV.
 - Classifies `status`, `request_type`, and `product_area`.
 - Escalates high-risk or unsupported requests.
-- Retrieves relevant local support documentation.
+- Retrieves relevant local support documentation with BM25 keyword search.
+- Retrieves semantic matches from Qdrant when the index is available.
+- Fuses BM25 and Qdrant results for stronger evidence selection.
 - Generates grounded template responses.
 - Writes developer citation/debug artifacts to `code/.cache/`.
 - Evaluates label accuracy against the sample CSV.
@@ -22,6 +24,14 @@ pip install -r code\requirements.txt
 ```
 
 ## Run
+
+Build or refresh the Qdrant index first:
+
+```powershell
+python code\main.py index --recreate
+```
+
+Then run predictions:
 
 ```powershell
 python code\main.py run --input support_tickets\support_tickets.csv --output support_tickets\output.csv
@@ -64,4 +74,4 @@ request_type: product_issue, feature_request, bug, invalid
 
 ## Current Limits
 
-V1 does not call Groq, Gemini, Docker Model Runner, or Qdrant yet. That is deliberate: this is the reliable baseline. Later versions can add Qdrant hybrid retrieval, corrective retrieval, reranking, and provider-backed structured generation without changing the CSV contract.
+The current version does not call Groq, Gemini, or Docker Model Runner yet. That is deliberate: retrieval and policy safety are being improved before adding provider-backed structured generation. Later versions can add corrective retrieval, reranking, and LLM response synthesis without changing the CSV contract.

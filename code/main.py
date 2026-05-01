@@ -21,6 +21,20 @@ DEFAULT_DEBUG_JSONL = Path("code/.cache/debug_predictions.jsonl")
 
 
 @app.command()
+def index(
+    recreate: bool = typer.Option(False, "--recreate", help="Drop and rebuild the Qdrant collection."),
+) -> None:
+    """Build the Qdrant semantic index for V2 hybrid retrieval."""
+    settings = Settings.load()
+    agent = SupportAgent(settings)
+    count = agent.build_index(recreate=recreate)
+    if count:
+        console.print(f"[green]Indexed {count} support chunks in Qdrant collection '{settings.qdrant_collection}'.[/green]")
+    else:
+        console.print("[yellow]Qdrant semantic indexing is disabled or unavailable; BM25 fallback remains active.[/yellow]")
+
+
+@app.command()
 def run(
     input_path: Path = typer.Option(
         DEFAULT_INPUT,

@@ -69,11 +69,15 @@ ESCALATION_PATTERNS = {
     "platform_outage": [
         "site is down",
         "none of the pages are accessible",
+        "none of the submissions",
+        "submissions across any challenges",
         "all requests are failing",
         "stopped working completely",
     ],
     "unsupported_action": [
         "fill in the forms",
+        "filling in the forms",
+        "infosec process",
         "ban the seller",
         "tell the company",
         "provide me with an alternative date",
@@ -158,12 +162,12 @@ def infer_product_area(company: str, text: str) -> str:
     if company == "Visa":
         if contains_any(lowered, ["traveller", "travelers", "travel support", "blocked during my travel", "blocked pendant mon voyage"]):
             return "travel_support"
+        if contains_any(lowered, ["minimum", "rules", "fees", "merchant is saying"]):
+            return "general_support"
         if contains_any(lowered, ["dispute", "charge", "merchant", "wrong product", "refund"]):
             return "dispute_resolution"
         if contains_any(lowered, ["identity", "fraud", "security"]):
             return "fraud_protection"
-        if contains_any(lowered, ["minimum", "rules", "fees", "merchant is saying"]):
-            return "general_support"
         return "general_support"
 
     if contains_any(lowered, ["actor in iron man"]):

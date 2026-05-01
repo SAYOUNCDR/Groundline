@@ -9,7 +9,7 @@ import pandas as pd
 from .config import Settings
 from .generator import generate_prediction
 from .policies import decide, normalize_company
-from .retriever import BM25Retriever, CitationStore
+from .retriever import CitationStore, HybridRetriever
 from .schemas import Evidence, Prediction, RequestType, Status, Ticket
 from .verifier import verify_prediction
 
@@ -17,8 +17,11 @@ from .verifier import verify_prediction
 class SupportAgent:
     def __init__(self, settings: Settings | None = None) -> None:
         self.settings = settings or Settings.load()
-        self.retriever = BM25Retriever.from_data_dir(self.settings.data_dir)
+        self.retriever = HybridRetriever.from_settings(self.settings)
         self.citations = CitationStore()
+
+    def build_index(self, recreate: bool = False) -> int:
+        return self.retriever.build_index(recreate=recreate)
 
     def answer(self, ticket: Ticket) -> Prediction:
         decision = decide(ticket)
@@ -94,7 +97,9 @@ def get_column(row: pd.Series, name: str) -> str:
 def has_enough_evidence(evidence: list[Evidence]) -> bool:
     if not evidence:
         return False
-    # BM25 scores vary by query length; this threshold is intentionally lenient for V1.
+    # Hybrid RRF scores are compact, while BM25-only fallback scores can be large.
+    if "+" in evidence[0].method or evidence[0].method == "qdrant":
+        return evidence[0].score >= 0.015
     return evidence[0].score >= 2.0
 
 

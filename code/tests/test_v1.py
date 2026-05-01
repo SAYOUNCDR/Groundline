@@ -7,6 +7,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from support_agent.evaluator import evaluate_sample
 from support_agent.policies import decide
+from support_agent.retriever import expand_query
 from support_agent.schemas import RequestType, Status, Ticket
 
 
@@ -41,3 +42,9 @@ def test_destructive_command_request_is_invalid() -> None:
     decision = decide(ticket)
     assert decision.status == Status.REPLIED
     assert decision.request_type == RequestType.INVALID
+
+
+def test_query_expansion_adds_user_management_terms() -> None:
+    expanded = expand_query("one of my employee has left; remove them from our account")
+    assert "deactivate user" in expanded
+    assert "manage team members" in expanded

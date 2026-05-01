@@ -290,6 +290,10 @@ Acceptance checks:
 - Querying known sample issues returns relevant support docs.
 - Retrieval results are inspectable in debug mode.
 
+Implementation note:
+
+- V2 should keep BM25 as a fallback and fuse BM25 + Qdrant results. This avoids losing exact keyword precision while adding semantic recovery for tickets where the user wording differs from support article wording.
+
 ### V3 - Hybrid Search
 
 Purpose: improve precision by combining exact keyword search and semantic search.
