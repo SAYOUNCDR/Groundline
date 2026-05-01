@@ -5,10 +5,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from support_agent.evaluator import evaluate_sample
-from support_agent.policies import decide
-from support_agent.retriever import expand_query
-from support_agent.schemas import RequestType, Status, Ticket
+from support_agent.core.schemas import RequestType, Status, Ticket
+from support_agent.decision.policies import decide
+from support_agent.evaluation.evaluator import evaluate_sample
+from support_agent.retrieval.hybrid import expand_query
 
 
 ROOT = Path(__file__).resolve().parents[2]

@@ -67,7 +67,7 @@ Beyond that you are free to bring your own approach — RAG, vector DBs, tool us
 
 ## Where your code goes
 
-All of your work belongs in [`code/`](./code/). The repo ships with an empty `code/main.py` you can grow into your full agent — add more modules (`agent.py`, `retriever.py`, `classifier.py`, etc.) next to it as needed.
+All of your work belongs in [`code/`](./code/). This project now uses `code/main.py` as the CLI entry point and `code/support_agent/` as the structured agent package.
 
 Conventions:
 

@@ -33,8 +33,6 @@ code/
     evaluation/                   sample CSV evaluation harness
 ```
 
-The legacy files directly under `support_agent/` are compatibility shims, so existing imports such as `support_agent.retriever` and `support_agent.schemas` still work.
-
 ## What The Current Version Does
 
 - Reads tickets from CSV.

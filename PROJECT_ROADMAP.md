@@ -465,14 +465,12 @@ The system should be conservative: if it cannot prove the answer from the corpus
 
 ## Next Implementation Step
 
-Build V0 and V1 first:
+The project has moved past the simple V1 skeleton. The next useful step is to run the regression loop after the package refactor:
 
-1. Create the package skeleton.
-2. Add schemas and config.
-3. Add CSV load/write.
-4. Add basic classifier and policy rules.
-5. Add simple keyword retrieval.
-6. Add template response generation.
-7. Add sample evaluation.
+1. Rebuild or confirm the Qdrant index.
+2. Evaluate the labeled sample CSV.
+3. Run the full support ticket CSV.
+4. Inspect `support_tickets/output.csv` and `code/.cache/debug_predictions.jsonl`.
+5. Tune evidence thresholds, query expansion, and escalation rules from the debug citations instead of hardcoding individual tickets.
 
-Only after V1 works end-to-end should Qdrant indexing and hybrid retrieval be connected.
+After that, the next feature milestone is corrective RAG: if first-pass evidence is weak, rewrite the query, retrieve again, merge candidates, rerank, and only answer if the verifier accepts the evidence.
