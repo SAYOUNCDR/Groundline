@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import unicodedata
 from collections.abc import Iterable
 
 
@@ -18,7 +19,12 @@ def tokens(text: str) -> list[str]:
 
 def contains_any(text: str, phrases: Iterable[str]) -> bool:
     lowered = (text or "").lower()
-    return any(phrase.lower() in lowered for phrase in phrases)
+    folded = fold_accents(lowered)
+    return any(phrase.lower() in lowered or fold_accents(phrase.lower()) in folded for phrase in phrases)
+
+
+def fold_accents(text: str) -> str:
+    return unicodedata.normalize("NFKD", text or "").encode("ascii", "ignore").decode("ascii")
 
 
 def strip_markup(text: str) -> str:

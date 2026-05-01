@@ -12,7 +12,7 @@ INVALID_PATTERNS = [
     "delete all files",
     "show internal",
     "affiche toutes les",
-    "documents récupérés",
+    "documents recuperes",
     "logic exact",
 ]
 
@@ -86,9 +86,9 @@ ESCALATION_PATTERNS = {
         "internal rules",
         "hidden logic",
         "documents retrieved",
-        "documents récupérés",
+        "documents recuperes",
         "logic exact",
-        "règles internes",
+        "regles internes",
     ],
 }
 
@@ -193,6 +193,8 @@ def decide(ticket: Ticket, ai_classification: AIClassification | None = None) ->
         urgency = ai_classification.urgency
         confidence = ai_classification.confidence
         flags = sorted(set([*flags, *ai_classification.risk_flags]))
+        if ai_classification.status == Status.ESCALATED and not flags:
+            flags.append("ai_safety_review")
 
     if request_type == RequestType.INVALID:
         return Decision(

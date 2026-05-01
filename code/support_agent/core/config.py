@@ -29,11 +29,13 @@ class Settings:
     gemini_model: str
     dmr_base_url: str
     dmr_model: str
+    use_llm_generation: bool
 
     @classmethod
     def load(cls) -> "Settings":
         root = repo_root()
         load_dotenv(root / ".env")
+        os.environ.setdefault("FASTEMBED_CACHE_PATH", str(root / "code" / ".cache" / "fastembed"))
         return cls(
             root_dir=root,
             code_dir=root / "code",
@@ -51,4 +53,5 @@ class Settings:
             gemini_model=os.getenv("GEMINI_MODEL", "gemini-2.5-flash"),
             dmr_base_url=os.getenv("DMR_BASE_URL", "http://localhost:12434/engines/v1"),
             dmr_model=os.getenv("DMR_MODEL", "gemma4:4B-Q4_K_XL"),
+            use_llm_generation=os.getenv("USE_LLM_GENERATION", "false").strip().lower() in {"1", "true", "yes"},
         )
