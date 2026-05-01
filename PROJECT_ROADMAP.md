@@ -71,7 +71,7 @@ support_tickets.csv
   -> output.csv
 ```
 
-## Planned Code Structure
+## Current Code Structure
 
 ```text
 code/
@@ -80,19 +80,17 @@ code/
   support_agent/
     __init__.py
     agent.py              pipeline orchestration
-    config.py             env and runtime settings
-    schemas.py            pydantic input/output/evidence models
-    ingest.py             markdown loading and chunking
-    retriever.py          Qdrant dense retrieval + BM25 retrieval
-    reranker.py           lexical/semantic/LLM reranking
-    classifier.py         company, product area, request type, risk
-    policies.py           hard escalation and safety rules
-    generator.py          provider-backed grounded answer generation
-    llm.py                Groq/Gemini/Docker Model Runner/template providers
-    verifier.py           schema, evidence, and safety checks
-    evaluator.py          sample CSV scoring and regression report
-    logging_utils.py      local run logging, no secrets
+    core/                 env settings, schemas, shared text helpers
+    corpus/               markdown loading and chunking
+    decision/             hard escalation and safety rules
+    retrieval/            Qdrant dense retrieval + BM25 retrieval
+    intelligence/         LLM router, classifier, evidence grader, reranker
+    generation/           grounded answer generation
+    quality/              schema, evidence, and safety checks
+    evaluation/           sample CSV scoring and regression report
 ```
+
+The older top-level files such as `config.py`, `schemas.py`, `retriever.py`, and `policies.py` are now compatibility shims that re-export the package modules above.
 
 ## Retrieval Design
 

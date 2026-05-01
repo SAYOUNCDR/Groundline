@@ -9,11 +9,11 @@ from rich.console import Console
 from rich.table import Table
 
 from support_agent.agent import SupportAgent
-from support_agent.config import Settings
-from support_agent.evaluator import evaluate_sample
+from support_agent.core.config import Settings
+from support_agent.evaluation.evaluator import evaluate_sample
 
 
-app = typer.Typer(help="Groundline V1 support triage agent.")
+app = typer.Typer(help="Groundline support triage agent.")
 console = Console()
 DEFAULT_INPUT = Path("support_tickets/support_tickets.csv")
 DEFAULT_OUTPUT = Path("support_tickets/output.csv")
@@ -24,7 +24,7 @@ DEFAULT_DEBUG_JSONL = Path("code/.cache/debug_predictions.jsonl")
 def index(
     recreate: bool = typer.Option(False, "--recreate", help="Drop and rebuild the Qdrant collection."),
 ) -> None:
-    """Build the Qdrant semantic index for V2 hybrid retrieval."""
+    """Build the Qdrant semantic index for hybrid retrieval."""
     settings = Settings.load()
     agent = SupportAgent(settings)
     count = agent.build_index(recreate=recreate)
@@ -80,7 +80,7 @@ def eval_command(
         help="Sample CSV with expected labels.",
     ),
 ) -> None:
-    """Evaluate V1 against the labeled sample CSV."""
+    """Evaluate the current agent against the labeled sample CSV."""
     result = evaluate_sample(input_path)
     summary = result["summary"]
     console.print(json.dumps(summary, indent=2))
@@ -112,7 +112,7 @@ def debug(
     subject: str = typer.Option("", "--subject", "-s", help="Optional subject."),
 ) -> None:
     """Inspect one ad-hoc ticket and show developer citations."""
-    from support_agent.schemas import Ticket
+    from support_agent.core.schemas import Ticket
 
     agent = SupportAgent()
     ticket = Ticket(row_id=0, issue=issue, subject=subject, company=company)
